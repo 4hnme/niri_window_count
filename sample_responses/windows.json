@@ -1,0 +1,39 @@
+{
+  "Ok": {
+    "Windows": [
+      {
+        "id": 26,
+        "title": "  | UNSORTED_token | 3:40 | Batman@[Rizzler] | 1 sel (en)  - Kakoune",
+        "app_id": "footclient",
+        "pid": 1935,
+        "workspace_id": 1,
+        "is_focused": false,
+        "is_floating": false,
+        "is_urgent": false,
+        "layout": {
+          "pos_in_scrolling_layout": [
+            2,
+            1
+          ],
+          "tile_size": [
+            1280.0,
+            1003.0
+          ],
+          "window_size": [
+            1276,
+            999
+          ],
+          "tile_pos_in_workspace_view": null,
+          "window_offset_in_tile": [
+            2.0,
+            2.0
+          ]
+        },
+        "focus_timestamp": {
+          "secs": 245608,
+          "nanos": 179859182
+        }
+      }
+    ]
+  }
+}

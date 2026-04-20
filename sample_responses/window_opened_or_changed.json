@@ -1,0 +1,37 @@
+{
+  "WindowOpenedOrChanged": {
+    "window": {
+      "id": 2,
+      "title": "  | ~/.config/niri/window_count.sh | 15:27 | WAP@[Tango] | 1 sel (en)  - Kakoune",
+      "app_id": "footclient",
+      "pid": 1935,
+      "workspace_id": 1,
+      "is_focused": true,
+      "is_floating": false,
+      "is_urgent": false,
+      "layout": {
+        "pos_in_scrolling_layout": [
+          1,
+          1
+        ],
+        "tile_size": [
+          1280.0,
+          1003.0
+        ],
+        "window_size": [
+          1276,
+          999
+        ],
+        "tile_pos_in_workspace_view": null,
+        "window_offset_in_tile": [
+          2.0,
+          2.0
+        ]
+      },
+      "focus_timestamp": {
+        "secs": 41055,
+        "nanos": 608653862
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "WindowLayoutsChanged": {
+    "changes": [
+      [
+        2,
+        {
+          "pos_in_scrolling_layout": [
+            1,
+            1
+          ],
+          "tile_size": [
+            1280.0,
+            1003.0
+          ],
+          "window_size": [
+            1276,
+            999
+          ],
+          "tile_pos_in_workspace_view": null,
+          "window_offset_in_tile": [
+            2.0,
+            2.0
+          ]
+        }
+      ],
+      [
+        26,
+        {
+          "pos_in_scrolling_layout": [
+            2,
+            1
+          ],
+          "tile_size": [
+            1280.0,
+            1003.0
+          ],
+          "window_size": [
+            1276,
+            999
+          ],
+          "tile_pos_in_workspace_view": null,
+          "window_offset_in_tile": [
+            2.0,
+            2.0
+          ]
+        }
+      ]
+    ]
+  }
+}
