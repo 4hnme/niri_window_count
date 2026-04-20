@@ -7,9 +7,9 @@ import "core:sys/posix"
 import niri "niri_ipc"
 
 // TODO: make them more easily customizable?
-#config(OVERVIEW_FMT, "[ OwO ]")
-#config(SIMPLE_FMT, "[  %d  ]")
-#config(FULL_FMT, "[% 2d/%- 2d]")
+OVERVIEW_FMT :: #config(OVERVIEW_FMT, "[ OwO ]")
+SIMPLE_FMT   :: #config(SIMPLE_FMT, "[  %d  ]")
+FULL_FMT     :: #config(FULL_FMT, "[% 2d/%- 2d]")
 
 // NOTE: do we really need `workspace_id` and `focused_window_id`?
 State :: struct {
