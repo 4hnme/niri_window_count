@@ -44,6 +44,9 @@ update_state :: proc(s: ^State, msg: ^niri.Msg) {
 
     case niri.WindowOpenedOrChanged:
         new_window := data.window
+        if new_window.is_focused {
+            s.focused_window_id = new_window.id
+        }
         found := false
         for &window in s.windows {
             if window.id == new_window.id {
