@@ -106,7 +106,8 @@ update_state :: proc(s: ^State, msg: ^niri.Msg) {
                 focused = w
             }
         }
-        if on_current_workspace == 1 || on_current_workspace == 0 {
+        // NOTE: maybe handle floating windows seperately? like excluding them from total count, or add another optional info: `[ 1/3 ] (2)` or `[ 1/3+2 ]`
+        if on_current_workspace == 1 || on_current_workspace == 0 || focused.is_floating {
             fmt.printfln(SIMPLE_FMT, on_current_workspace)
         } else if focused.workspace_id == s.workspace_id {
             current := focused.layout.pos_in_scrolling_layout.x + \
