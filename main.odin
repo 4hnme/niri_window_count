@@ -20,6 +20,8 @@ State :: struct {
     workspaces: [dynamic]niri.Workspace,
     focused_window_id: int,
     windows: [dynamic]niri.Window,
+    last_current: int,
+    last_on_current_workspace: int,
 }
 
 update_state :: proc(s: ^State, msg: ^niri.Msg) {
@@ -112,7 +114,11 @@ update_state :: proc(s: ^State, msg: ^niri.Msg) {
         } else if focused.workspace_id == s.workspace_id {
             current := focused.layout.pos_in_scrolling_layout.x + \
                        focused.layout.pos_in_scrolling_layout.y - 1
-            fmt.printfln(FULL_FMT, current, on_current_workspace)
+            // if current != s.last_current || on_current_workspace != s.last_on_current_workspace {
+                fmt.printfln(FULL_FMT, current, on_current_workspace)
+            // }
+            s.last_current = current
+            s.last_on_current_workspace = on_current_workspace
         }
         // else we don't print anything as the state is not set correctly (i.e. active workspace is updated, but focused window is not).
         // this happens because we process events sequentially with no option do this in bulk.
