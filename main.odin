@@ -176,21 +176,38 @@ main :: proc() {
     state := state_init()
     defer state_destroy(&state)
 
+    buf: [8192]u8
+    start: uint
     for {
         strings.builder_reset(&state.sb)
-        byte: u8
-        for byte != '\n' {
-            posix.recv(state.stream_sock, &byte, 1, posix.Msg_Flags{})
-            strings.write_byte(&state.sb, byte)
-        }
-        str := string(state.sb.buf[:])
-        event, pok := niri.parse_event(str)
 
-        if pok {
-            if event == nil {
-                fmt.eprintfln("Something went wrong, couldn't parse:\n\t%v\nObject is nil, but the error is %v\n", str, pok)
+        read := posix.recv(state.stream_sock, raw_data(buf[start:]), len(buf) - start, posix.Msg_Flags{})
+        if read == 0 {
+            break
+        }
+        // NOTE: should we use temporary allocator or just free it? this is the only allocation done in here
+        msgs := strings.split_lines(string(buf[:uint(read)+start]), context.temp_allocator)
+        defer free_all(context.temp_allocator)
+
+        for str in msgs {
+            event, pok := niri.parse_event(str)
+
+            if pok {
+                if event == nil {
+                    fmt.eprintfln("Something went wrong, couldn't parse:\n\t%v\nObject is nil, but the error is %v\n", str, pok)
+                }
+                update_state(&state, &event)
             }
-            update_state(&state, &event)
+        }
+        // if the last message was not received fully
+        if len(msgs) > 1 && buf[start+uint(read)-1] != '\n' {
+            last_msg := msgs[len(msgs) - 1]
+            msg_end := start + uint(read)
+            msg_start := msg_end - len(last_msg)
+            copy(buf[:len(last_msg)], buf[msg_start:msg_end])
+            start = len(last_msg)
+        } else {
+            start = 0
         }
     }
 }
