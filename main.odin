@@ -2,6 +2,8 @@ package main
 
 import "core:fmt"
 import "core:os"
+import "core:sort"
+import "core:slice"
 import "core:strings"
 import "core:sys/posix"
 import niri "niri_ipc"
@@ -98,27 +100,39 @@ update_state :: proc(s: ^State, msg: ^niri.Msg) {
         // buuut i don't spend even a percent of my time using niri in overview, so this doesn't bother me at all.
         fmt.println(OVERVIEW_FMT)
     } else {
-        focused: niri.Window
-        on_current_workspace := 0
-        for w in s.windows {
+        @(static) workspace: [dynamic]^niri.Window
+        clear(&workspace)
+        focused: ^niri.Window
+        for &w in s.windows {
             if w.workspace_id == s.workspace_id {
-                on_current_workspace += 1
+                append(&workspace, &w)
             }
             if w.id == s.focused_window_id {
-                focused = w
+                focused = &w
             }
         }
+        if focused == nil do return
+
+        sort_windows :: proc(w1: ^niri.Window, w2: ^niri.Window) -> int {
+            p1 := w1.layout.pos_in_scrolling_layout
+            p2 := w2.layout.pos_in_scrolling_layout
+            if p1.x != p2.x do return p1.x - p2.x
+            if p1.y != p2.y do return p1.y - p2.y
+            return 0
+        }
+        sort.quick_sort_proc(workspace[:], sort_windows)
+
         // NOTE: maybe handle floating windows seperately? like excluding them from total count, or add another optional info: `[ 1/3 ] (2)` or `[ 1/3+2 ]`
-        if on_current_workspace == 1 || on_current_workspace == 0 || focused.is_floating {
-            fmt.printfln(SIMPLE_FMT, on_current_workspace)
+        if len(workspace) == 1 || len(workspace) == 0 || focused.is_floating {
+            fmt.printfln(SIMPLE_FMT, len(workspace))
         } else if focused.workspace_id == s.workspace_id {
-            current := focused.layout.pos_in_scrolling_layout.x + \
-                       focused.layout.pos_in_scrolling_layout.y - 1
-            // if current != s.last_current || on_current_workspace != s.last_on_current_workspace {
-                fmt.printfln(FULL_FMT, current, on_current_workspace)
-            // }
+            current, sok := slice.linear_search(workspace[:], focused)
+            assert(sok)
+            if current != s.last_current || len(workspace) != s.last_on_current_workspace {
+                fmt.printfln(FULL_FMT, current + 1, len(workspace))
+            }
             s.last_current = current
-            s.last_on_current_workspace = on_current_workspace
+            s.last_on_current_workspace = len(workspace)
         }
         // else we don't print anything as the state is not set correctly (i.e. active workspace is updated, but focused window is not).
         // this happens because we process events sequentially with no option do this in bulk.
