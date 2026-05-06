@@ -104,7 +104,7 @@ update_state :: proc(s: ^State, msg: ^niri.Msg) {
         clear(&workspace)
         focused: ^niri.Window
         for &w in s.windows {
-            if w.workspace_id == s.workspace_id {
+            if w.workspace_id == s.workspace_id && !w.is_floating {
                 append(&workspace, &w)
             }
             if w.id == s.focused_window_id {
@@ -121,23 +121,22 @@ update_state :: proc(s: ^State, msg: ^niri.Msg) {
             return 0
         }
         sort.quick_sort_proc(workspace[:], sort_windows)
+        current, sok := slice.linear_search(workspace[:], focused)
+        if !sok && len(workspace) > 1 && !focused.is_floating do return // the state is not initialized correctly
+        current += 1
 
         // NOTE: maybe handle floating windows seperately? like excluding them from total count, or add another optional info: `[ 1/3 ] (2)` or `[ 1/3+2 ]`
-        if len(workspace) == 1 || len(workspace) == 0 || focused.is_floating {
+        if len(workspace) < 2 || focused.is_floating {
             fmt.printfln(SIMPLE_FMT, len(workspace))
-        } else if focused.workspace_id == s.workspace_id {
-            current, sok := slice.linear_search(workspace[:], focused)
-            assert(sok)
+        } else {
             if current != s.last_current || len(workspace) != s.last_on_current_workspace {
-                fmt.printfln(FULL_FMT, current + 1, len(workspace))
+                fmt.printfln(FULL_FMT, current, len(workspace))
             }
-            s.last_current = current
-            s.last_on_current_workspace = len(workspace)
         }
-        // else we don't print anything as the state is not set correctly (i.e. active workspace is updated, but focused window is not).
-        // this happens because we process events sequentially with no option do this in bulk.
-    }
 
+        s.last_current = current
+        s.last_on_current_workspace = len(workspace)
+    }
 }
 
 create_socket :: proc() -> posix.FD {
